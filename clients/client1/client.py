@@ -14,21 +14,81 @@ from src.game.gamemap import *
 # Game map that you can use to query 
 gameMap = GameMap()
 
+class Actor(object):
+    actions = []
+    def __init__(self, character, enemy1, enemy2, enemy3):
+        self.character = character
+        self.enemy1 = enemy1         
+        self.enemy2 = enemy2
+        self.enemy3 = enemy3
+
+    # set movement of character
+    def movement(self, x, y):
+
+        return json
+
+    # set the enemy flag of what its evading
+    #  0 if not evading
+    def evades(self):
+        return move_flag
+
+    # set enemy to move towards
+    # also checks for skill attack
+    # 0 if not evading
+    def advance(self):
+
+        return move_flag
+
+    # 0 is base attack
+    # everything else is index of array of moves
+    def use_skill(self):
+        return attack_skill
+
+# appends attack json commands to action array
+def attack_json(actions, character, target):
+    return actions.append({
+                    "Action": "Attack",
+                    "CharacterId": character.id,
+                    "TargetId": target.id,
+                })
+
+# appends move json commands to specified location to action array
+def move_json(actions, character, location):
+    return actions.append({
+                    "Action": "Move",
+                    "CharacterId": character.id,
+                    "TargetId": location,
+                })
+
+# appends ability json commands to action array
+def ability_json(actions, character, target, abilityId, cooldown):
+    if abilityId in character.abilities.items():
+       #If I can, then cast it
+       ability = game_consts.abilitiesList[int(abilityId)]
+       # Get ability
+        return actions.append({
+                                            "Action": "Cast",
+                                            "CharacterId": character.id,
+                                            # Am I buffing or debuffing? If buffing, target myself
+                                            "TargetId": target.id if ability["StatChanges"][0]["Change"] < 0 else character.id,
+                                            "AbilityId": int(abilityId)
+                                        })
 # --------------------------- SET THIS IS UP -------------------------
 teamName = "Test"
 # ---------------------------------------------------------------------
-
+character = "Druid"
 # Set initial connection data
 def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
+    
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Druid",
-                 "ClassId": "Druid"},
-                {"CharacterName": "Archer",
-                 "ClassId": "Archer"},
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
+                {"CharacterName": character,
+                 "ClassId": character},
+                {"CharacterName": character,
+                 "ClassId": character},
+                {"CharacterName": character,
+                 "ClassId": character},
             ]}
 # ---------------------------------------------------------------------
 
