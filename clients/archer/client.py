@@ -10,6 +10,7 @@ sys.path.append("../..")
 import src.game.game_constants as game_consts
 from src.game.character import *
 from src.game.gamemap import *
+from ai.archer import *
 
 # Game map that you can use to query 
 gameMap = GameMap()
@@ -23,12 +24,12 @@ def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
+                {"CharacterName": "Archer",
+                 "ClassId": "Archer"},
+                {"CharacterName": "Archer",
+                 "ClassId": "Archer"},
+                {"CharacterName": "Archer",
+                 "ClassId": "Archer"},
             ]}
 # ---------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ def processTurn(serverResponse):
 # --------------------------- CHANGE THIS SECTION -------------------------
     # Setup helper variables
     actions = []
+    actors = []
     myteam = []
     enemyteam = []
     # Find each team and serialize the objects
@@ -54,62 +56,12 @@ def processTurn(serverResponse):
 # ------------------ You shouldn't change above but you can ---------------
 
     # Choose a target
-    target = None
-    for character in enemyteam:
-        if not character.is_dead():
-            target = character
-            break
+    for character in myteam:
+        actor = ArcherActor(character, enemyteam)
+        actors.append(actor)
 
-    # If we found a target
-    if target:
-        for character in myteam:
-            # If I am in range, either move towards target
-            if character.in_range_of(target, gameMap):
-                # Am I already trying to cast something?
-                if character.casting is None:
-                    cast = False
-                    # for abilityId, cooldown in character.abilities.items():
-                    #     # Do I have an ability not on cooldown
-                    #     if cooldown == 0:
-                    #         # If I can, then cast it
-                    #         ability = game_consts.abilitiesList[int(abilityId)]
-                    #         # Get ability
-                    #         actions.append({
-                    #             "Action": "Cast",
-                    #             "CharacterId": character.id,
-                    #             # Am I buffing or debuffing? If buffing, target myself
-                    #             "TargetId": target.id if ability["StatChanges"][0]["Change"] < 0 else character.id,
-                    #             "AbilityId": int(abilityId)
-                    #         })
-                    #         cast = Truefor abilityId, cooldown in character.abilities.items():
-                    #     # Do I have an ability not on cooldown
-                    #     if cooldown == 0:
-                    #         # If I can, then cast it
-                    #         ability = game_consts.abilitiesList[int(abilityId)]
-                    #         # Get ability
-                    #         actions.append({
-                    #             "Action": "Cast",
-                    #             "CharacterId": character.id,
-                    #             # Am I buffing or debuffing? If buffing, target myself
-                    #             "TargetId": target.id if ability["StatChanges"][0]["Change"] < 0 else character.id,
-                    #             "AbilityId": int(abilityId)
-                    #         })
-                    #         cast = True
-                    #         break
-                    #         break
-                    # Was I able to cast something? Either wise attack
-                    if not cast:
-                        actions.append({
-                            "Action": "Attack",
-                            "CharacterId": character.id,
-                            "TargetId": target.id,
-                        })
-            else: # Not in range, move towards
-                actions.append({
-                    "Action": "Move",
-                    "CharacterId": character.id,
-                    "TargetId": target.id,
-                })
+    for actor in actors:
+        actions.append(actor.movement())
 
     # Send actions to the server
     return {

@@ -23,12 +23,12 @@ def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
-                {"CharacterName": "Sorc",
-                 "ClassId": "Sorcerer"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
             ]}
 # ---------------------------------------------------------------------
 
@@ -64,34 +64,29 @@ def processTurn(serverResponse):
     if target:
         for character in myteam:
             # If I am in range, either move towards target
-            if character.classId == "Sorcerer":
-                print character.in_ability_range_of(target, gameMap, 16, True)
-                if character.casting is None:
+            if character.classId == "Assassin":
+                if not character.in_ability_range_of(target, gameMap, 11) and character.casting is None:
+                    actions.append({
+                        "Action": "Move",
+                        "CharacterId": character.id,
+                        "TargetId": target.id,
+                    })
+                elif character.casting is None:
                     cast = False
                     for abilityId, cooldown in character.abilities.items():
-                        if abilityId == "8" and cooldown == 0 and len(character.buffs) == 0:
-                            actions.append({
-                                            "Action": "Cast",
-                                            "CharacterId": character.id,
-                                            # Am I buffing or debuffing? If buffing, target myself
-                                            "TargetId": character.id,
-                                            "AbilityId": 8
-                                        })
-                            cast = True
-                            break
-                        elif abilityId == "16" and cooldown == 0 and character.in_ability_range_of(target, gameMap, 16):
+                        if abilityId == "11" and cooldown == 0:
                             actions.append({
                                             "Action": "Cast",
                                             "CharacterId": character.id,
                                             # Am I buffing or debuffing? If buffing, target myself
                                             "TargetId": target.id,
-                                            "AbilityId": 16
+                                            "AbilityId": 11
                                         })
-                            case = True
+                            cast = True
                             break
                     if not cast:
                         actions.append({
-                            "Action": "Move",
+                            "Action": "Attack",
                             "CharacterId": character.id,
                             "TargetId": target.id,
                         })

@@ -145,7 +145,7 @@ class Character(object):
         return True
 
     def in_ability_range_of(self, target, map, ability_id, ret=False):
-        if ability_id not in self.abilities:
+        if str(ability_id) not in self.abilities:
             if ret:
                 raise InvalidAbilityIdException
             else:
