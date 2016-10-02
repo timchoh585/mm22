@@ -24,8 +24,8 @@ def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Archer",
-                 "ClassId": "Archer"},
+                {"CharacterName": "Sorc",
+                 "ClassId": "Sorcerer"},
                 {"CharacterName": "Archer",
                  "ClassId": "Archer"},
                 {"CharacterName": "Archer",

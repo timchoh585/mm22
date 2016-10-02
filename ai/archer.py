@@ -5,11 +5,10 @@ class ArcherActor(Actor):
     def movement(self):
         json = None
         move_flag = self.evades()
+        print move_flag
         if move_flag != -1:
             position = self.move_from_target(self.enemies[move_flag])
             json = move_position_json(self.character, position)
-            print position[0]
-            print position[1]
             return json
         move_flag = self.advance()
         if move_flag != -1:
