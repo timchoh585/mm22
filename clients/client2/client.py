@@ -23,12 +23,12 @@ def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Enchanter",
-                 "ClassId": "Enchanter"},
-                {"CharacterName": "Enchanter",
-                 "ClassId": "Enchanter"},
-                {"CharacterName": "Enchanter",
-                 "ClassId": "Enchanter"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
+                {"CharacterName": "Assassin",
+                 "ClassId": "Assassin"},
             ]}
 # ---------------------------------------------------------------------
 
@@ -42,23 +42,28 @@ def processTurn(serverResponse):
     # Find each team and serialize the objects
     for team in serverResponse["Teams"]:
         if team["Id"] == serverResponse["PlayerInfo"]["TeamId"]:
+            '''
             characterJson = team["Characters"][0]
             character = Character()
             character.serialize(characterJson)
             myteam.append(character)
-            '''for characterJson in team["Characters"]:
+            '''
+            for characterJson in team["Characters"]:
                 character = Character()
                 character.serialize(characterJson)
-                myteam.append(character)'''
+                myteam.append(character)
         else:
+            '''
             characterJson = team["Characters"][0]
             character = Character()
             character.serialize(characterJson)
             enemyteam.append(character)
-            '''for characterJson in team["Characters"]:
+            '''
+            for characterJson in team["Characters"]:
                 character = Character()
                 character.serialize(characterJson)
-                enemyteam.append(character)'''
+                enemyteam.append(character)
+
 # ------------------ You shouldn't change above but you can ---------------
 
     # Choose a target

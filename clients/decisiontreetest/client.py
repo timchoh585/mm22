@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+#from __future__ import print_function
 import socket
 import json
 import os
@@ -14,7 +15,7 @@ from decisiontree.decisiontree import *
 
 # Game map that you can use to query 
 gameMap = GameMap()
-
+f1 = open('./decisiontrees.txt', 'w+')
 # --------------------------- SET THIS IS UP -------------------------
 teamName = "Test"
 # ---------------------------------------------------------------------
@@ -28,8 +29,8 @@ def initialResponse():
                  "ClassId": "Archer"},
                 {"CharacterName": "Archer",
                  "ClassId": "Archer"},
-                {"CharacterName": "Warrior",
-                 "ClassId": "Warrior"},
+                {"CharacterName": "Archer",
+                 "ClassId": "Archer"},
             ]}
 # ---------------------------------------------------------------------
 
@@ -37,38 +38,45 @@ def initialResponse():
 def processTurn(serverResponse):
 # --------------------------- CHANGE THIS SECTION -------------------------
     # Setup helper variables
+    turn_number = serverResponse["TurnNumber"]
     myteam = []
     enemyteam = []
     # Find each team and serialize the objects
     for team in serverResponse["Teams"]:
         if team["Id"] == serverResponse["PlayerInfo"]["TeamId"]:
+            '''
             characterJson = team["Characters"][0]
             character = Character()
             character.serialize(characterJson)
             myteam.append(character)
-            '''for characterJson in team["Characters"]:
+            '''
+            for characterJson in team["Characters"]:
                 character = Character()
                 character.serialize(characterJson)
-                myteam.append(character)'''
+                myteam.append(character)
         else:
+            '''
             characterJson = team["Characters"][0]
             character = Character()
             character.serialize(characterJson)
             enemyteam.append(character)
-            '''for characterJson in team["Characters"]:
+            '''
+            for characterJson in team["Characters"]:
                 character = Character()
                 character.serialize(characterJson)
-                enemyteam.append(character)'''
+                enemyteam.append(character)
 
 # ------------------ You shouldn't change above but you can ---------------
     # Choose a target
 
 
+    print >>f1, 'Turn number: ' + str(turn_number)
     decision_tree = DecisionTree(myteam, enemyteam)
-    decision_tree.generate_to_level(decision_tree.initial_state, 0, 7, True)
+    decision_tree.generate_to_level(decision_tree.initial_state, 0, 1, True)
+    print_decision_tree(decision_tree.initial_state, 0, f1)
     best_move = initialize_ab(decision_tree.initial_state)
     actions = best_move.deserialize()
-    print actions
+    print >>f1, actions
     # Send actions to the server
     return {
         'TeamName': teamName,

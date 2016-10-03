@@ -1,9 +1,11 @@
+#from __future__ import print_function
 import sys
 sys.path.append("../")
 import src.game.game_constants as game_consts
 from src.game.character import *
 from src.game.gamemap import *
 from expectedvalue import ExpectedValue
+
 
 class DecisionTree(object):
     initial_state = None
@@ -25,7 +27,7 @@ class DecisionTree(object):
                 actions = generate_actions(i, prev_state, self.gameMap, team_1)
                 team_actions.append(actions)
 
-            '''for action_1 in team_actions[0]:
+            for action_1 in team_actions[0]:
                 for action_2 in team_actions[1]:
                     for action_3 in team_actions[2]:
                         next_state = copy_chars_off_actions([action_1, action_2, action_3], prev_state, team_1)
@@ -38,7 +40,8 @@ class DecisionTree(object):
 
                         next_state.us = team_1
                         prev_state.children.append(next_state)
-                        self.generate_to_level(next_state, currentlevel + 1, targetlevel, not team_1)'''
+                        self.generate_to_level(next_state, currentlevel + 1, targetlevel, not team_1)
+            '''
             for action_1 in team_actions[0]:
                 next_state = copy_chars_off_actions([action_1], prev_state, team_1)
                 next_state = eval_next_state(0, action_1, next_state, self.gameMap, team_1)
@@ -51,6 +54,7 @@ class DecisionTree(object):
                 next_state.us = team_1
                 prev_state.children.append(next_state)
                 self.generate_to_level(next_state, currentlevel + 1, targetlevel, not team_1)
+            '''
 
 
 def alphabeta(tree, alpha, alpha_node, beta, beta_node):
@@ -64,7 +68,7 @@ def alphabeta(tree, alpha, alpha_node, beta, beta_node):
 
         for i in tree.children:
             grandchild = alphabeta(i, best_value, best_node, beta, beta_node)
-            if calc_expected_value(grandchild) > best_value:
+            if calc_expected_value(grandchild) >= best_value:
                 best_value = calc_expected_value(grandchild)
                 best_node = grandchild
             if beta < best_value:
@@ -75,7 +79,7 @@ def alphabeta(tree, alpha, alpha_node, beta, beta_node):
 
         for i in tree.children:
             grandchild = alphabeta(i, alpha, alpha_node, best_value, best_node)
-            if calc_expected_value(grandchild) < best_value:
+            if calc_expected_value(grandchild) <= best_value:
                 best_value = calc_expected_value(grandchild)
                 best_node = grandchild
             if best_value < alpha:
@@ -89,38 +93,47 @@ def initialize_ab(tree):
     best_node = alphabeta(tree, -999999, None, 999999, None)
     return best_node
 
-def print_decision_tree(tree):
-    if len(tree.children) == 0:
+
+def indentation(level):
+    result = ""
+    while(level > 0):
+        result = result + '\t'
+        level = level - 1
+    return result
+
+
+def print_decision_tree(node, level, file):
+    if len(node.children) == 0:
+        print >>file, indentation(level) + 'No move moves...'
         return
 
     #print tree.expected_value.evalue_dps
-    print "Number of possible moves: " + str(len(tree.children))
-    for child in tree.children:
-        action = child.actions_acted[0]
-        actor = None
-        if child.us:
-            actor = child.team[0]
-        else:
-            actor = child.enemy_team[0]
-        result = ""
-        if action.is_movement():
-            if action.m == 0:
-                result = "moves north to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
-            elif action.m == 1:
-                result =  "moves south to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
-            elif action.m == 2:
-                result = "moves east to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
+    print >>file, indentation(level) + "Number of possible moves: " + str(len(node.children))
+    for child in node.children:
+        for i, action in enumerate(child.actions_acted):
+            actor = None
+            if child.us:
+                actor = child.team[i]
             else:
-                result = "moves west to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
-        elif action.is_attack():
-            if action.target[0]:
-                result = "attacks " + child.team[action.target[1]].classId
-            else:
-                result = "attacks " + child.enemy_team[action.target[1]].classId
-        print actor.classId + " " + result + " with expected_value: " + str(calc_expected_value(child))
-        print 'Next Move: '
-        print_decision_tree(child)
-        print 'No move moves...'
+                actor = child.enemy_team[i]
+            result = ""
+            if action.is_movement():
+                if action.m == 0:
+                    result = "moves north to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
+                elif action.m == 1:
+                    result =  "moves south to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
+                elif action.m == 2:
+                    result = "moves east to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
+                else:
+                    result = "moves west to location: (" + str(actor.position[0]) + ", " + str(actor.position[1]) + ")"
+            elif action.is_attack():
+                if action.target[0]:
+                    result = "attacks " + child.team[action.target[1]].classId
+                else:
+                    result = "attacks " + child.enemy_team[action.target[1]].classId
+            print >>file, indentation(level) + actor.classId + " " + result + " with expected_value: " + str(calc_expected_value(child))
+        print >>file, indentation(level) + 'Next Move: '
+        print_decision_tree(child, level + 1, file)
 
 
 class State(object):
@@ -145,9 +158,9 @@ class State(object):
                 character = self.enemy_team[i]
             if(not action.is_movement()):
                 if action.target[0]:
-                    target = ret.team[action.target[1]]
+                    target = self.team[action.target[1]]
                 else:
-                    target = ret.enemy_team[action.target[1]]
+                    target = self.enemy_team[action.target[1]]
             if(action.is_movement()):
                 ret.append({
                     "Action": "Move",

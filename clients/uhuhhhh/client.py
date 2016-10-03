@@ -65,23 +65,27 @@ def processTurn(serverResponse):
         for character in myteam:
             # If I am in range, either move towards target
             if character.classId == "Assassin":
-                if not character.in_ability_range_of(target, gameMap, 11) and character.casting is None:
+                if not character.in_range_of(target, gameMap):
                     actions.append({
                         "Action": "Move",
                         "CharacterId": character.id,
                         "TargetId": target.id,
                     })
-                elif character.casting is None:
+                else:
                     cast = False
                     for abilityId, cooldown in character.abilities.items():
-                        if abilityId == "11" and cooldown == 0:
+                        # Do I have an ability not on cooldown
+                        if cooldown == 0 and abilityId == 11:
+                            # If I can, then cast it
+                            ability = game_consts.abilitiesList[int(abilityId)]
+                            # Get ability
                             actions.append({
-                                            "Action": "Cast",
-                                            "CharacterId": character.id,
-                                            # Am I buffing or debuffing? If buffing, target myself
-                                            "TargetId": target.id,
-                                            "AbilityId": 11
-                                        })
+                                "Action": "Cast",
+                                "CharacterId": character.id,
+                                # Am I buffing or debuffing? If buffing, target myself
+                                "TargetId": target.id if ability["StatChanges"][0]["Change"] < 0 else character.id,
+                                "AbilityId": int(abilityId)
+                            })
                             cast = True
                             break
                     if not cast:
