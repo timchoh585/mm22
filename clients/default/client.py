@@ -23,8 +23,8 @@ def initialResponse():
 # ------------------------- CHANGE THESE VALUES -----------------------
     return {'TeamName': teamName,
             'Characters': [
-                {"CharacterName": "Paladin",
-                 "ClassId": "Paladin"},
+                {"CharacterName": "Enchanter",
+                 "ClassId": "Enchanter"},
                 {"CharacterName": "Archer",
                  "ClassId": "Archer"},
                 {"CharacterName": "Warrior",

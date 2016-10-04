@@ -17,7 +17,7 @@ from decisiontree.decisiontree import *
 gameMap = GameMap()
 f1 = open('./decisiontrees.txt', 'w+')
 # --------------------------- SET THIS IS UP -------------------------
-teamName = "Test"
+teamName = "Decision"
 # ---------------------------------------------------------------------
 
 # Set initial connection data

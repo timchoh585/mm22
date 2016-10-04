@@ -55,8 +55,9 @@ for team in serverResponse["Teams"]:
             character.serialize(characterJson)
             enemyteam.append(character)
 
-decision_tree = DecisionTree(enemyteam, myteam)
+decision_tree = DecisionTree(myteam, enemyteam)
 decision_tree.generate_to_level(decision_tree.initial_state, 0, 1, True)
 print_decision_tree(decision_tree.initial_state, 0, sys.stdout)
 best_move = initialize_ab(decision_tree.initial_state)
 actions = best_move.deserialize()
+print actions
