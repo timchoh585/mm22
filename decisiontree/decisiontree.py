@@ -291,7 +291,7 @@ def generate_actions(character_index, current_state, gameMap, team_1):
             ret.append(Action(1))
 
     for i, enemy in enumerate(enemies):
-        if main.in_range_of(enemy, gameMap):
+        if main.in_range_of(enemy, gameMap) and not enemy.is_dead():
             ret.append(Action(4, (not team_1, i)))
         for abilityId, cooldown in main.abilities.items():
             if main.can_use_ability(abilityId):

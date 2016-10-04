@@ -12,8 +12,8 @@ class ExpectedValue(object):
 
     player_ehealth = 0
     enemy_ehealth = 0
-    player_ehealth_dps = sys.maxint
-    enemy_ehealth_dps = sys.maxint
+    player_ehealth_dps = 0
+    enemy_ehealth_dps = 0
 
     def __init__(self, characters, enemies):
         self.characters = characters
@@ -29,18 +29,10 @@ class ExpectedValue(object):
                 self.enemy_ehealth = self.enemy_ehealth + enemy.attributes.health * self.calculate_modifiers(enemy)
         else:
             for character in self.characters:
-                if not character.is_dead():
-                    self.player_ehealth_dps = min(self.player_ehealth_dps, (character.attributes.health + self.calculate_dps(character.classId)
-                        + self.calculate_avg_distance(character, 0)))
-            if self.player_ehealth_dps == 0:
-                self.player_ehealth_dps = -sys.maxint - 1
+                self.player_ehealth_dps = self.player_ehealth_dps + ((character.attributes.health / character.attributes.armor) * self.calculate_dps(character.classId))
 
             for enemy in self.enemies:
-                if not enemy.is_dead():
-                    self.enemy_ehealth_dps = min(self.enemy_ehealth_dps, (enemy.attributes.health
-                        + self.calculate_dps(enemy.classId)))
-            if self.enemy_ehealth_dps == 0:
-                self.enemy_ehealth_dps = -sys.maxint - 1
+                self.enemy_ehealth_dps = self.enemy_ehealth_dps + ((enemy.attributes.health / enemy.attributes.armor) * self.calculate_dps(enemy.classId))
 
     # returns dps from dps array
     def calculate_dps(self, character):
